@@ -36,7 +36,7 @@ module Machinist
       def make(*args, &block)
         lathe = Lathe.run(Machinist::SequelAdapter, self.new, *args)
         unless Machinist.nerfed?
-          lathe.object.save
+          lathe.object.save(:raise_on_failure => true)
         end
         lathe.object(&block)
       end

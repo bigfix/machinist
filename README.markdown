@@ -122,7 +122,6 @@ You can create a bunch of sham definitions in one hit like this:
       body  { Faker::Lorem.paragraphs(3).join("\n\n") }
     end
 
-
 Blueprints - Generating Objects
 -------------------------------
 
@@ -260,6 +259,22 @@ You can also call plan on has\_many associations, making it easy to test nested 
     
 (Calling plan on associations is not yet supported in DataMapper.)
 
+
+### Using Blueprints in Rails `db/seed.rb`
+
+You can turn off or set a new seed value for creating applicatoin seed objects that depend on Sham values by putting the following in your `db/seed.rb` file.
+
+    # Sham generates totally random values.
+    Sham.seed(false)
+    # Sham generates a application specific set of random values.
+    Sham.seed(ActionController::Base.session_options[:secret])
+
+Machinist also works with plain old Ruby objects. Let's say you have a class like:
+
+    class Post
+      attr_accessor :title
+      attr_accessor :body
+    end
 
 ### Blueprints on Plain Old Ruby Objects
 

@@ -32,6 +32,35 @@ describe Sham do
     values2.should == values1
   end
 
+  it "should generate the same sequence of values after a reset and setting new seed" do
+    Sham.clear
+    Sham.seed("newseed")
+    Sham.random { rand }
+    values1 = (1..10).map { Sham.random }
+    Sham.reset
+    values2 = (1..10).map { Sham.random }
+    values2.should == values1
+  end
+
+  it "should generate different sequence of values after setting new seed" do
+    Sham.clear
+    Sham.random { rand }
+    values1 = (1..10).map { Sham.random }
+    Sham.seed("newseed")
+    values2 = (1..10).map { Sham.random }
+    values2.should_not == values1
+  end
+
+  it "should generate random sequence of values if Sham.seed(false)" do
+    Sham.clear
+    Sham.seed(false)
+    Sham.random { rand }
+    values1 = (1..100).map { Sham.random }
+    Sham.seed(false)
+    values2 = (1..100).map { Sham.random }
+    values2.should_not == values1
+  end
+
   it "should alias reset with reset(:before_all)" do
     Sham.clear
     Sham.random { rand }

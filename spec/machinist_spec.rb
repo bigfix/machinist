@@ -53,58 +53,6 @@ module MachinistSpecs
       Person.make.name.should == "Fred"
     end
     
-    describe "iterators" do
-      before do
-        Machinist::Lathe.clear_iterators
-      end
-      
-      it "should let an attribute provide an iterator" do
-        Person.blueprint do
-          name { |index| "Name #{index}" }
-        end
-        Person.make.name.should == "Name 0"
-      end
-  
-      it "should increment the iterator" do
-        Person.blueprint do
-          name { |index| "Name #{index}" }
-        end
-        Person.make.name.should == "Name 0"
-        Person.make.name.should == "Name 1"
-      end
-  
-      it "should allow the iterator to be cleared" do
-        Person.blueprint do
-          name { |index| "Name #{index}" }
-        end
-        Person.make.name.should == "Name 0"
-        Machinist::Lathe.clear_iterators
-        Person.make.name.should == "Name 0"
-      end
-  
-      it "should allow separate iterators per attribute" do
-        Person.blueprint do 
-          name { |index| "Name #{index}" }
-          admin { |index| "Admin #{index}" }
-        end
-        person = Person.make
-        person.name.should == "Name 0"
-        person.admin.should == "Admin 0"
-      end
-      
-      it "should allow separate iterators per attribute in different blueprints" do
-        Person.blueprint do
-          name { |index| "Name #{index}" }
-        end
-        Person.make.name.should == "Name 0"
-        
-        Person.blueprint do
-          admin { |index| "Admin #{index}" }
-        end
-        Person.make.admin.should == "Admin 0"
-      end
-    end
-    
     it "should let the blueprint override an attribute with a default value" do
       Post.blueprint do
         published { false }
@@ -235,6 +183,58 @@ module MachinistSpecs
         Person.blueprint {} # master
         Person.clear_blueprints!
         lambda { Person.make }.should raise_error(RuntimeError)
+      end
+    end
+    
+    describe "iterators" do
+      before do
+        Machinist::Lathe.clear_iterators
+      end
+      
+      it "should be allowed on an attribute" do
+        Person.blueprint do
+          name { |index| "Name #{index}" }
+        end
+        Person.make.name.should == "Name 0"
+      end
+  
+      it "should increment" do
+        Person.blueprint do
+          name { |index| "Name #{index}" }
+        end
+        Person.make.name.should == "Name 0"
+        Person.make.name.should == "Name 1"
+      end
+  
+      it "should be clearable" do
+        Person.blueprint do
+          name { |index| "Name #{index}" }
+        end
+        Person.make.name.should == "Name 0"
+        Machinist::Lathe.clear_iterators
+        Person.make.name.should == "Name 0"
+      end
+  
+      it "should be unique to an attribute" do
+        Person.blueprint do 
+          name { |index| "Name #{index}" }
+          admin { |index| "Admin #{index}" }
+        end
+        person = Person.make
+        person.name.should == "Name 0"
+        person.admin.should == "Admin 0"
+      end
+      
+      it "should be unique to a blueprint and an atribute" do
+        Person.blueprint do
+          name { |index| "Name #{index}" }
+        end
+        Person.make.name.should == "Name 0"
+        
+        Person.blueprint do
+          admin { |index| "Admin #{index}" }
+        end
+        Person.make.admin.should == "Admin 0"
       end
     end
     

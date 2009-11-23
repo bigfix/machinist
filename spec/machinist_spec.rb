@@ -52,7 +52,59 @@ module MachinistSpecs
       Person.blueprint { name }
       Person.make.name.should == "Fred"
     end
+    
+    describe "iterators" do
+      before do
+        Machinist::Lathe.clear_iterators
+      end
+      
+      it "should let an attribute provide an iterator" do
+        Person.blueprint do
+          name { |index| "Name #{index}" }
+        end
+        Person.make.name.should == "Name 0"
+      end
   
+      it "should increment the iterator" do
+        Person.blueprint do
+          name { |index| "Name #{index}" }
+        end
+        Person.make.name.should == "Name 0"
+        Person.make.name.should == "Name 1"
+      end
+  
+      it "should allow the iterator to be cleared" do
+        Person.blueprint do
+          name { |index| "Name #{index}" }
+        end
+        Person.make.name.should == "Name 0"
+        Machinist::Lathe.clear_iterators
+        Person.make.name.should == "Name 0"
+      end
+  
+      it "should allow separate iterators per attribute" do
+        Person.blueprint do 
+          name { |index| "Name #{index}" }
+          admin { |index| "Admin #{index}" }
+        end
+        person = Person.make
+        person.name.should == "Name 0"
+        person.admin.should == "Admin 0"
+      end
+      
+      it "should allow separate iterators per attribute in different blueprints" do
+        Person.blueprint do
+          name { |index| "Name #{index}" }
+        end
+        Person.make.name.should == "Name 0"
+        
+        Person.blueprint do
+          admin { |index| "Admin #{index}" }
+        end
+        Person.make.admin.should == "Admin 0"
+      end
+    end
+    
     it "should let the blueprint override an attribute with a default value" do
       Post.blueprint do
         published { false }

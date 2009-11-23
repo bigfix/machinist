@@ -6,6 +6,7 @@ module Machinist
   #
   # The blueprint is instance_eval'd against the Lathe.
   class Lathe
+    @@iterators = {}
     def self.run(adapter, object, *args)
       blueprint       = object.class.blueprint
       named_blueprint = object.class.blueprint(args.shift) if args.first.is_a?(Symbol)
@@ -26,7 +27,12 @@ module Machinist
     def initialize(adapter, object, attributes = {})
       @adapter = adapter
       @object  = object
+      @@iterators[object.class.to_s] ||= Hash.new(0)
       attributes.each {|key, value| assign_attribute(key, value) }
+    end
+    
+    def self.clear_iterators
+      @@iterators.each { |object, count| @@iterators[object] = Hash.new(0) }
     end
 
     def object
@@ -74,7 +80,9 @@ module Machinist
     def generate_attribute_value(attribute, *args)
       if block_given?
         # If we've got a block, use that to generate the value.
-        yield
+        result = yield(@@iterators[@object.class.to_s][attribute])
+        @@iterators[@object.class.to_s][attribute] += 1
+        result
       else
         # Otherwise, look for an association or a sham.
         if @adapter.has_association?(object, attribute)

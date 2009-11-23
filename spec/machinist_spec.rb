@@ -195,24 +195,24 @@ module MachinistSpecs
         Person.blueprint do
           name { |index| "Name #{index}" }
         end
-        Person.make.name.should == "Name 0"
+        Person.make.name.should == "Name 1"
       end
   
       it "should increment" do
         Person.blueprint do
           name { |index| "Name #{index}" }
         end
-        Person.make.name.should == "Name 0"
         Person.make.name.should == "Name 1"
+        Person.make.name.should == "Name 2"
       end
   
       it "should be clearable" do
         Person.blueprint do
           name { |index| "Name #{index}" }
         end
-        Person.make.name.should == "Name 0"
+        Person.make.name.should == "Name 1"
         Machinist::Lathe.clear_iterators
-        Person.make.name.should == "Name 0"
+        Person.make.name.should == "Name 1"
       end
   
       it "should be unique to an attribute" do
@@ -221,20 +221,20 @@ module MachinistSpecs
           admin { |index| "Admin #{index}" }
         end
         person = Person.make
-        person.name.should == "Name 0"
-        person.admin.should == "Admin 0"
+        person.name.should == "Name 1"
+        person.admin.should == "Admin 1"
       end
       
       it "should be unique to a blueprint and an atribute" do
         Person.blueprint do
           name { |index| "Name #{index}" }
         end
-        Person.make.name.should == "Name 0"
+        Person.make.name.should == "Name 1"
         
         Person.blueprint do
           admin { |index| "Admin #{index}" }
         end
-        Person.make.admin.should == "Admin 0"
+        Person.make.admin.should == "Admin 1"
       end
     end
     

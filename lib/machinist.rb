@@ -27,12 +27,12 @@ module Machinist
     def initialize(adapter, object, attributes = {})
       @adapter = adapter
       @object  = object
-      @@iterators[object.class.to_s] ||= Hash.new(0)
+      @@iterators[object.class.to_s] ||= Hash.new(1)
       attributes.each {|key, value| assign_attribute(key, value) }
     end
     
     def self.clear_iterators
-      @@iterators.each { |object, count| @@iterators[object] = Hash.new(0) }
+      @@iterators.each { |object, count| @@iterators[object] = Hash.new(1) }
     end
 
     def object

@@ -1,5 +1,6 @@
 class Sham
   @@shams = {}
+  @@seed = 1
   
   # Over-ride module's built-in name method, so we can re-use it for
   # generating names. This is a bit of a no-no, but we get away with
@@ -24,10 +25,17 @@ class Sham
 
   def self.reset(scope = :before_all)
     @@shams.values.each { |sham| sham.reset(scope) }
+    @@seed = 1 unless @@seed
   end
   
   def self.define(&block)
     Sham.instance_eval(&block)
+  end
+  
+  def self.seed(new_seed = 1)
+    # object.hash is inconsistent across 32-bit, 64-bit
+    # see: http://www.ruby-forum.com/topic/141577
+    @@seed = new_seed ? new_seed.hash : new_seed
   end
   
   def initialize(name, options = {}, &block)
@@ -68,7 +76,7 @@ private
   
   def seeded
     begin
-      srand(1)
+      srand(@@seed) if @@seed
       yield
     ensure
       srand

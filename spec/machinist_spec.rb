@@ -52,7 +52,7 @@ module MachinistSpecs
       Person.blueprint { name }
       Person.make.name.should == "Fred"
     end
-  
+    
     it "should let the blueprint override an attribute with a default value" do
       Post.blueprint do
         published { false }
@@ -201,6 +201,58 @@ module MachinistSpecs
         Person.blueprint {} # master
         Person.clear_blueprints!
         lambda { Person.make }.should raise_error(RuntimeError)
+      end
+    end
+    
+    describe "iterators" do
+      before do
+        Machinist::Lathe.clear_iterators
+      end
+      
+      it "should be allowed on an attribute" do
+        Person.blueprint do
+          name { |index| "Name #{index}" }
+        end
+        Person.make.name.should == "Name 1"
+      end
+  
+      it "should increment" do
+        Person.blueprint do
+          name { |index| "Name #{index}" }
+        end
+        Person.make.name.should == "Name 1"
+        Person.make.name.should == "Name 2"
+      end
+  
+      it "should be clearable" do
+        Person.blueprint do
+          name { |index| "Name #{index}" }
+        end
+        Person.make.name.should == "Name 1"
+        Machinist::Lathe.clear_iterators
+        Person.make.name.should == "Name 1"
+      end
+  
+      it "should be unique to an attribute" do
+        Person.blueprint do 
+          name { |index| "Name #{index}" }
+          admin { |index| "Admin #{index}" }
+        end
+        person = Person.make
+        person.name.should == "Name 1"
+        person.admin.should == "Admin 1"
+      end
+      
+      it "should be unique to a blueprint and an atribute" do
+        Person.blueprint do
+          name { |index| "Name #{index}" }
+        end
+        Person.make.name.should == "Name 1"
+        
+        Person.blueprint do
+          admin { |index| "Admin #{index}" }
+        end
+        Person.make.admin.should == "Admin 1"
       end
     end
     

@@ -81,7 +81,11 @@ module Machinist
     
     def assign_attribute(key, value)
       assigned_attributes[key.to_sym] = value
-      @object.send("#{key}=", value)
+      if @adapter.respond_to?(:assign_attribute)
+        @adapter.assign_attribute(@object, key, value)
+      else
+        @object.send("#{key}=", value)
+      end
     end
   
     def attribute_assigned?(key)

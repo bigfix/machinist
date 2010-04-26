@@ -12,6 +12,14 @@ module Machinist
       object.class.association_reflection(attribute).associated_class
     end
 
+    def self.assign_attribute(object, attribute, value)
+      if Machinist.nerfed? && has_association?(object, attribute)
+        object.associations[attribute] = value
+      else
+        object.send("#{attribute}=", value)
+      end
+    end
+
     def self.assigned_attributes_without_associations(lathe)
       attributes = {}
       lathe.assigned_attributes.each_pair do |attribute, value|

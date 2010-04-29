@@ -122,6 +122,16 @@ module MachinistSequelSpecs
           comment[:post_id].should_not be_nil
         }.should change(Post, :count).by(1)
       end
+
+      describe "on a many_to_one association" do
+        it "should allow explicitly setting the association to nil" do
+          Comment.blueprint { post }
+          Comment.blueprint(:no_post) { post { nil } }
+          lambda {
+            @comment = Comment.plan(:no_post)
+          }.should_not raise_error
+        end
+      end
     end
 
     describe "make_unsaved method" do

@@ -26,7 +26,7 @@ module Machinist
         association = lathe.object.class.association_reflection(attribute)
         if association && association[:type] == :many_to_one
           key = association[:key] || association.default_key
-          attributes[key] = value.send(association.primary_key)
+          attributes[key] = value ? value.send(association.primary_key) : nil
         else
           attributes[attribute] = value
         end

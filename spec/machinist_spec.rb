@@ -5,6 +5,7 @@ module MachinistSpecs
   
   class Person
     attr_accessor :name, :admin
+    attr_writer :password
   end
 
   class Post
@@ -99,6 +100,11 @@ module MachinistSpecs
         body  { title }
       end
       Post.make.body.should == "Test"
+    end
+
+    it "should not fail when an attribute is write-only" do
+      Person.blueprint { password { "test" } }
+      lambda { Person.make(:password => "test") }.should_not raise_error
     end
   
     describe "named blueprints" do
